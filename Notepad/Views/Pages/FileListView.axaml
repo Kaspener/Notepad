@@ -11,11 +11,11 @@
 	</UserControl.Resources>
 
 	<Grid RowDefinitions="*, 50, 40">
-		<ListBox Grid.Row="0" SelectionMode="Single" SelectedItem="{Binding File}" Items="{Binding Directories}">
+		<ListBox Name="fileListBox" Grid.Row="0" SelectionMode="Single" SelectedItem="{Binding File}" Items="{Binding Directories}">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<Grid ColumnDefinitions="60, *">
-						<Rectangle Grid.ColumnSpan="2" Grid.Column="0"/>
+						<Rectangle ZIndex="10" Grid.ColumnSpan="2" Grid.Column="0" DoubleTapped="DoubleClickedEvent" Fill="Transparent" />
 						<Image Grid.Column="0" Height="40" Width="40" Source="{Binding Image, Converter={StaticResource variableImage}}"/>
 						<TextBlock Grid.Column="1" Text="{Binding Name}"/>
 					</Grid>
@@ -24,12 +24,12 @@
 		</ListBox>
 		<TextBox Name="fileTextBox" Grid.Row="1" Text="{Binding TextBoxText}"/>
 		<Grid ColumnDefinitions="*, *" Grid.Row="2">
-			<Button Name="okButton" Grid.Column="0" Content="Открыть" Command="{Binding OpenCommand}"
+			<Button x:Name="okButton" Name="okButton" Grid.Column="0" Content="{Binding ButtonContent}" Command="{Binding OpenCommand}"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"/>
-			<Button Name="cancelButton" Grid.Column="1" Content="Отмена"
+			<Button Name="cancelButton" Grid.Column="1" Content="Отмена" Command="{Binding CancelCommand}"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
 					HorizontalContentAlignment="Center"

@@ -1,5 +1,7 @@
-﻿using Avalonia.Input;
+﻿using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.X11;
 using Notepad.Models;
 using ReactiveUI;
 using System;
@@ -11,40 +13,75 @@ namespace Notepad.ViewModels.Pages
 {
     public class FileListViewModel : ViewModelBase
     {
-        private string path = Directory.GetCurrentDirectory();
-        private ObservableCollection<FileVisual> _directories;
-        private DirectoryInfo dr;
-        private FileVisual file;
-        private string textBoxText;
+        protected string path = Directory.GetCurrentDirectory();
+        protected ObservableCollection<FileVisual> _directories;
+        protected DirectoryInfo dr;
+        protected FileVisual file;
+        protected string textBoxText;
+        protected string buttonContent;
+        protected bool status;
 
 
         public FileListViewModel()
         {
+            Status = false;
             DirectoriesAndFiles();
 
-            OpenCommand = ReactiveCommand.Create(() =>
-            { 
-                if (!file.IsFile)
+            OpenCommand = ReactiveCommand.Create<Unit, string>(_ =>
+            {
+                if (file is not null)
                 {
-                    if (file.Image == "Assets/up.png")
+                    if (!file.IsFile)
                     {
-                        if (Directory.GetParent(path) is not null)
+                        if (file.Image == "Assets/up.png")
                         {
-                            path = Directory.GetParent(path).FullName;
+                            if (Directory.GetParent(path) is not null)
+                            {
+                                path = Directory.GetParent(path).FullName;
+                                DirectoriesAndFiles();
+                            }
+
+                        }
+                        else
+                        {
+                            path += @"\" + file.Name;
                             DirectoriesAndFiles();
                         }
-
+                        return "";
                     }
                     else
                     {
-                        path += @"\"+file.Name;
-                        DirectoriesAndFiles();
+                        string str;
+                        using (StreamReader reader = new StreamReader(path + @"\" + textBoxText))
+                        {
+                            str = reader.ReadToEnd();
+                        }
+                        status = true;
+                        return str;
                     }
-                } 
+                }
+                if (textBoxText != "")
+                {
+                    if (System.IO.File.Exists(path + @"\" + textBoxText))
+                    {
+                        string str;
+                        using (StreamReader reader = new StreamReader(path + @"\" + textBoxText))
+                        {
+                            str = reader.ReadToEnd();
+                        }
+                        status = true;
+                        return str;
+                    }
+                    else { status = true; TextBoxText = ""; return ""; }
+                }
+                return "";
             });
+
+            CancelCommand = ReactiveCommand.Create(() => { });
+            ButtonContent = "Открыть";
         }
 
-        private void DirectoriesAndFiles()
+        public void DirectoriesAndFiles()
         {
             dr = new DirectoryInfo(path);
             Directories = new ObservableCollection<FileVisual>();
@@ -69,7 +106,7 @@ namespace Notepad.ViewModels.Pages
         }
 
 
-        public FileVisual File
+        public virtual FileVisual File
         {
             get => file;
             set 
@@ -79,12 +116,25 @@ namespace Notepad.ViewModels.Pages
             }
         }
 
-        public string TextBoxText
+        public virtual string TextBoxText
         {
             get => textBoxText;
             set => this.RaiseAndSetIfChanged(ref textBoxText, value);
         }
 
-        ReactiveCommand<Unit, Unit> OpenCommand { get; }
+        public string ButtonContent 
+        {
+            get => buttonContent;
+            set => this.RaiseAndSetIfChanged(ref buttonContent, value);
+        }
+
+        public bool Status
+        {
+            get => status;
+            set => status = value;
+        }
+
+        public virtual ReactiveCommand<Unit, string> OpenCommand { get; }
+        public ReactiveCommand<Unit, Unit> CancelCommand { get; }
     }
 }

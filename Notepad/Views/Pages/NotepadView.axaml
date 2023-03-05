@@ -5,13 +5,13 @@
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
              x:Class="Notepad.Views.Pages.NotepadView">
 	<Grid RowDefinitions="* ,40, 40">
-		<TextBox Name="contentTextBox" Grid.Row="0" AcceptsReturn="True"/>
-		<Button Name="openButton" Grid.Row="1" Content="Открыть" 
+		<TextBox Name="contentTextBox" Grid.Row="0" AcceptsReturn="True" Text="{Binding Text}"/>
+		<Button Name="openButton" Grid.Row="1" Content="Открыть" Command="{Binding OpenCommand}"
 				HorizontalAlignment="Stretch" 
 				VerticalAlignment="Stretch" 
 				HorizontalContentAlignment="Center" 
 				VerticalContentAlignment="Center"/>
-		<Button Name="saveButton" Grid.Row="2" Content="Сохранить"
+		<Button Name="saveButton" Grid.Row="2" Content="Сохранить" Command="{Binding SaveCommand}"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Stretch"
 				HorizontalContentAlignment="Center"
